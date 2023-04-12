@@ -1,64 +1,52 @@
-#include "main.h"
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 /**
- * strtow - concatenates all the arguments of your program
- *@str: string
- *@av: arguments
- * Return: a pointer to a new string
+ * strtow - splits a string into words.
+ * @str: string to be splitted
+ * Return: pointer to an array of strings (words) or null
  */
-char **strtow(char *str)
-{
-	int i, w, j, k, count, m, wordf;
-	char **p;
-	char *x;
 
-	w = 0;
-	j = 0;
-	i = 0;
-	count = 0;
-	if (*str == '\0' || str == NULL)
+char **strtow(char *str)
+
+{
+	int i, j, k = 0, l, m, count = 0, len;
+	char **words;
+
+	if (str == NULL || str[0] == '\0')
 		return (NULL);
 	for (i = 0; str[i] != '\0'; i++)
-	{
-		if (str[i] == ' ' && (str[i + 1] != ' ' || str[i + 1] == '\0'))
-			w++;
-	}
-	p = (char **)malloc((w + 1) * sizeof(char *));
-	if (p == NULL)
+		if (str[i] != ' ' && (str[i + 1] == ' ' || str[i + 1] == '\0'))
+			count++;
+	if (count == 0)
 		return (NULL);
-	for (wordf = 0; str[wordf] && j <= w; wordf++)
+	words = malloc((count + 1) * sizeof(char *));
+	if (words == NULL)
 	{
-		count = 0;
-		if (str[wordf] != ' ')
+		free(words);
+		return (NULL);
+	}
+	for (i = 0; str[i] != '\0' &&  k < count; i++)
+	{
+		if (str[i] != ' ')
 		{
-			for (i = wordf ; str[i] != '\0'; i++)
+			len = 0;
+			for (j = i; str[j] != ' ' && str[j] != '\0'; j++)
+				len++;
+			words[k] = malloc((len + 1) * sizeof(char));
+
+			if (words[k] == NULL)
 			{
-				if (str[i] == ' ')
-					break;
-				count++;
-			}
-			*(p + j) = (char *)malloc((count + 1) * sizeof(char));
-			if (*(p + j) == NULL)
-			{
-				for (k = 0; k <= j; k++)
-				{
-					x = p[k];
-					free(x);
-				}
-				free(p);
+				for (m = 0; m < k; m++)
+					free(words[k]);
+				free(words);
 				return (NULL);
 			}
-			for (m = 0; wordf < i; wordf++)
-			{
-				p[j][m] = str[wordf];
-				m++;
-			}
-			p[j][m] = '\0';
-			j++;
+			for (l = 0; l < len; l++, i++)
+				words[k][l] = str[i];
+			words[k][l] = '\0', k++;
 		}
 	}
-	p[j] = NULL;
-	return (p);
+	words[k] = NULL;
+	return (words);
 }
